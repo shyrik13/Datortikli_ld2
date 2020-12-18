@@ -27,12 +27,13 @@ fn main() {
     for stream in listener.incoming() {
         match stream {
             Ok(stream) => {
-                println!("New connection: {}", stream.peer_addr().unwrap());
                 thread::spawn(move || {
+                    let addr = stream.peer_addr().unwrap();
+                    println!("New connection: {}", addr);
                     match handle_client(&stream) {
                         Err(_) => {
                             stream.shutdown(Both);
-                            println!("Lost connection: {}", stream.peer_addr().unwrap());
+                            println!("Lost connection: {}", addr);
                         }
                         _ => {}
                     }
