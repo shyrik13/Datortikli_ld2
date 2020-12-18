@@ -7,6 +7,7 @@ use std::{thread, time};
 use std::net::{TcpListener, TcpStream};
 use std::io::{Write};
 use chrono::{Local};
+use std::env;
 
 fn handle_client(mut stream: TcpStream) {
     let now = Local::now();
@@ -16,9 +17,20 @@ fn handle_client(mut stream: TcpStream) {
 }
 
 fn main() {
-    let listener = TcpListener::bind("127.0.0.1:3333").unwrap();
+    let args: Vec<String> = env::args().collect();
+
+    if args.len() == 2 {
+        let addr = &args[1].to_owned();
+        create(addr);
+    } else {
+        panic!("Must be included ip and port as (0.0.0.0:0000)!");
+    }
+}
+
+fn create(addr : &str) {
+    let listener = TcpListener::bind(addr.to_owned()).unwrap();
     // accept connections and process them
-    println!("Server listening on port 3333");
+    println!("Server running on {}", addr.to_owned());
     for stream in listener.incoming() {
         match stream {
             Ok(stream) => {

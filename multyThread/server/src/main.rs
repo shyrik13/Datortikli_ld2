@@ -8,6 +8,7 @@ use std::net::{TcpListener};
 use std::io::{Write, Result};
 use chrono::{Local};
 use std::net::Shutdown::Both;
+use std::env;
 
 fn handle_client(mut stream: &std::net::TcpStream)-> Result<()> {
     loop {
@@ -19,11 +20,21 @@ fn handle_client(mut stream: &std::net::TcpStream)-> Result<()> {
 }
 
 fn main() {
+    let args: Vec<String> = env::args().collect();
 
-    let listener = TcpListener::bind("127.0.0.1:4444").unwrap();
+    if args.len() == 2 {
+        let addr = &args[1].to_owned();
+        create(addr);
+    } else {
+        panic!("Must be included ip and port as (0.0.0.0:0000)!");
+    }
+}
+
+fn create(addr : &str) {
+    let listener = TcpListener::bind(addr.to_owned()).unwrap();
 
     // accept connections and process them
-    println!("Server listening on port 4444");
+    println!("Server running on {}", addr.to_owned());
     for stream in listener.incoming() {
         match stream {
             Ok(stream) => {
@@ -49,5 +60,4 @@ fn main() {
 
     // close the socket server
     drop(listener);
-
 }
